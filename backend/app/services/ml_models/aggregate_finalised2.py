@@ -177,7 +177,36 @@ def run_pipeline(
         voltage = extract_or_empty(merged_df, ["voltage_risk_score"], "consumer_id")
         
         # Transformer
+        # Transformers
         transformer = extract_or_empty(merged_df, ["transformer_loss_score"], "transformer_id")
+
+        # -------------------------
+        # Construct user_data for Anomaly Model (if enabled)
+        # -------------------------
+        if run_anomaly_model:
+            # We need to rebuild the 3 dataframes required by anomaly_detection.py
+            # 1. smart_meter_data: {consumer_id, date, energy_consumed}
+            # 2. context_data: {date, season, temperature}
+            # 3. consumer_transformer_mapping: {consumer_id, transformer_id}
+            
+            required_smart = {"consumer_id", "date", "energy_consumed"}
+            required_context = {"date", "season", "temperature"}
+            required_mapping = {"consumer_id", "transformer_id"}
+            
+            # Check if columns present
+            if (required_smart.issubset(merged_df.columns) and 
+                required_context.issubset(merged_df.columns) and 
+                required_mapping.issubset(merged_df.columns)):
+                
+                user_data = {
+                    "smart_meter_data": merged_df[list(required_smart)].copy(),
+                    "context_data": merged_df[list(required_context)].drop_duplicates().copy(),
+                    "consumer_transformer_mapping": merged_df[list(required_mapping)].drop_duplicates().copy()
+                }
+            else:
+                # Missing columns for anomaly model -> Disable it to prevent crash
+                print("Warning: MergedDF missing columns for Anomaly Model. Disabling anomaly detection.")
+                run_anomaly_model = False
 
     else:
         # -------------------------

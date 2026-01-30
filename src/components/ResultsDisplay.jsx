@@ -1,5 +1,7 @@
 import React from 'react';
 
+import MapComponent from './MapComponent';
+
 const ResultsDisplay = ({ data }) => {
     const [showAll, setShowAll] = React.useState(false);
 
@@ -36,10 +38,13 @@ const ResultsDisplay = ({ data }) => {
                 </div>
                 <div className="summary-card loss">
                     <h3>Est. Loss</h3>
-                    <div className="value">${summary.total_loss_calculated}</div>
+                    <div className="value">₹{summary.total_loss_calculated}</div>
                     <p>Potential Revenue Loss</p>
                 </div>
             </div>
+
+            {/* Geographic Analysis (Map) */}
+            <MapComponent data={data} />
 
             {/* Anomalies Table */}
             {anomalies && anomalies.length > 0 && (

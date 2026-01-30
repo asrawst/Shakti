@@ -31,9 +31,9 @@ class MLEngine:
 
         if is_merged_format and len(files) == 1:
             # Single file path
-            final_df = run_pipeline(
+            final_df, total_loss_all_transformers = run_pipeline(
                 merged_df=first_df,
-                run_anomaly_model=False
+                run_anomaly_model=True
             )
         else:
             # Standard 5-file path
