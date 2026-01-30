@@ -121,4 +121,4 @@ Shakti/
 ---
 
 ## 👥 Contributors
-Developed by **Aditya** and team.
+Developed by **Team The Jesters**.
