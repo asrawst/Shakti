@@ -167,7 +167,7 @@ def _core_electrical_bomb_logic(merged_df: pd.DataFrame) -> pd.DataFrame:
     tx_daily["loss_ratio"] = (tx_daily["energy_input"] - tx_daily["total_consumption"]) / tx_daily["energy_input"]
     tx_loss = tx_daily.groupby("transformer_id")["loss_ratio"].mean()
     tx_loss_risk = (tx_loss - tx_loss.min()) / (tx_loss.max() - tx_loss.min())
-    total_loss_all_transformers = tx_daily["loss"].sum()
+    total_loss_all_transformers = tx_daily["loss"].abs().sum()
 
     transformer_loss_df = (
         merged_df[["consumer_id", "transformer_id"]]

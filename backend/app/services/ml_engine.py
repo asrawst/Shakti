@@ -76,7 +76,7 @@ class MLEngine:
         
         # Simple heuristics for missing business metrics
         grid_health = max(0, 100 - (n_anomalies / total_consumers * 100)) if total_consumers > 0 else 0
-        total_loss = total_loss_all_transformers*9 
+        total_loss = int(total_loss_all_transformers*9)
         response = {
             "summary": {
                 "total_consumers": int(total_consumers),
