@@ -110,13 +110,12 @@ const MapComponent = ({ data }) => {
             const lng = parseFloat(item.longitude);
             if (isNaN(lat) || isNaN(lng)) return;
 
-            let color = '#22c55e'; // Default Green (Rest)
+            let color = '#ef4444'; // Red for critical
             const risk = (item.risk_class || '').toLowerCase();
 
-            if (risk === 'theft' || risk === 'critical') {
-                color = '#ef4444'; // Red
-            } else if (risk === 'suspicious' || risk === 'mild') {
-                color = '#eab308'; // Yellow
+            // Filter: Only show critical/theft cases
+            if (risk !== 'theft' && risk !== 'critical') {
+                return;
             }
 
             // Create a simple SVG marker

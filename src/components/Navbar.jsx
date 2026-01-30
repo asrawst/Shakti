@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Logo from './Logo';
 import { Menu, User, History, LogOut } from 'lucide-react';
+import '../navbar_menu.css';
 
 const Navbar = ({ user, onLoginClick, onLogoutClick, onAboutClick, onHistoryClick }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -69,34 +70,20 @@ const Navbar = ({ user, onLoginClick, onLogoutClick, onAboutClick, onHistoryClic
                         </button>
 
                         {isMenuOpen && (
-                            <div style={{
-                                position: 'absolute',
-                                top: '100%',
-                                right: 0,
-                                marginTop: '0.5rem',
-                                width: '200px',
-                                background: 'rgba(17, 24, 39, 0.95)',
-                                backdropFilter: 'blur(16px)',
-                                WebkitBackdropFilter: 'blur(16px)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                borderRadius: '12px',
-                                padding: '0.5rem',
-                                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
-                                zIndex: 100,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '0.2rem'
-                            }}>
-                                <button className="menu-item" style={menuItemStyle}>
-                                    <User size={16} />
-                                    <span>Profile</span>
-                                </button>
+                            <div className="floating-menu">
+                                <div className="menu-list">
+                                    <button className="menu-item-float" onClick={() => { setIsMenuOpen(false); }}>
+                                        <div className="menu-item-title"><User size={16} /> Profile</div>
+                                        <div className="menu-item-desc">Manage your account preferences</div>
+                                    </button>
 
-                                <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '0.2rem 0' }}></div>
-                                <button className="menu-item" onClick={handleLogout} style={{ ...menuItemStyle, color: '#ef4444' }}>
-                                    <LogOut size={16} />
-                                    <span>Sign Out</span>
-                                </button>
+                                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '0.5rem 0' }}></div>
+
+                                    <button className="menu-item-float" onClick={handleLogout}>
+                                        <div className="menu-item-title" style={{ color: '#ef4444' }}><LogOut size={16} /> Sign Out</div>
+                                        <div className="menu-item-desc">Securely log out of the system</div>
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>
