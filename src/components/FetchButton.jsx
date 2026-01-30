@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FetchButton = ({ onClick, disabled }) => {
+const FetchButton = ({ onClick, disabled, isAnalyzed }) => {
     return (
         <div className="action-container">
             <button
@@ -8,7 +8,7 @@ const FetchButton = ({ onClick, disabled }) => {
                 onClick={onClick}
                 disabled={disabled}
             >
-                {disabled ? 'Processing...' : 'Fetch & Analyze Data'}
+                {disabled ? 'Processing...' : isAnalyzed ? 'Analysed!' : 'Fetch & Analyze Data'}
             </button>
         </div>
     );

@@ -38,7 +38,7 @@ const Navbar = ({ user, onLoginClick, onLogoutClick, onAboutClick, onHistoryClic
                 <ul className="nav-links">
                     <li><a href="#" className="nav-link active">Home</a></li>
                     <li><a href="#" className="nav-link" onClick={(e) => { e.preventDefault(); onAboutClick(); }}>About Us</a></li>
-                    <li><a href="#" className="nav-link">Contact Us</a></li>
+                    <li><a href="https://github.com/asrawst/Shakti.git" target="_blank" rel="noopener noreferrer" className="nav-link">Contact Us</a></li>
                 </ul>
             </div>
 

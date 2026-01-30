@@ -90,6 +90,7 @@ function App() {
       if (data.status === 'success') {
         const resultData = data.data;
         setResult(resultData);
+        setLoading(false); // Update UI immediately, don't wait for history save
 
         // Save to history if user is logged in
         if (auth.currentUser) {
@@ -167,7 +168,7 @@ function App() {
           <Hero />
 
           <section>
-            <h2 id="upload-section" className="section-title">Upload Datasets</h2>
+            <h2 id="upload-section" className="section-title">Upload Dataset</h2>
             <div className="upload-grid">
               <UploadBlock
                 key={dataset.id}
@@ -179,7 +180,7 @@ function App() {
               />
             </div>
 
-            <FetchButton onClick={handleFetch} disabled={loading} />
+            <FetchButton onClick={handleFetch} disabled={loading} isAnalyzed={!!result} />
 
             <div ref={resultsRef}>
               <ResultsDisplay data={result} />
