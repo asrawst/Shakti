@@ -215,14 +215,37 @@
 }
 
 /* Upload Section */
+.section-title {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.3);
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
 .upload-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  /* Centers the items so 2 items on second row are centered */
   gap: 2rem;
   margin-bottom: 4rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .upload-card {
+  flex: 1 1 300px;
+  /* Grow, Shrink, Basis */
+  max-width: 350px;
+  /* Don't get too wide */
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
@@ -258,9 +281,141 @@
   color: #fff;
 }
 
+.file-input-hidden {
+  display: none;
+}
+
+/* Info Icon */
+.info-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.info-icon:hover {
+  opacity: 1;
+  color: var(--accent-blue);
+  transform: scale(1.1);
+}
+
 .upload-desc {
   font-size: 0.875rem;
   color: var(--text-secondary);
+  font-family: monospace;
+  /* To make filenames look technical */
+  margin-bottom: 1.5rem;
+}
+
+/* Visual Upload Button inside card */
+.upload-btn-visual {
+  margin-top: auto;
+  /* Push to bottom */
+  padding: 0.5rem 1.5rem;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-blue);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+}
+
+.upload-card:hover .upload-btn-visual {
+  background: var(--accent-blue);
+  color: white;
+  border-color: var(--accent-blue);
+}
+
+.upload-card:hover .upload-btn-visual {
+  background: var(--accent-blue);
+  color: white;
+  border-color: var(--accent-blue);
+}
+
+/* Info View inside Card */
+.info-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  animation: fade-in 0.3s ease-out;
+}
+
+.info-heading {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #06b6d4;
+  /* Cyan color from image */
+  text-transform: capitalize;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.info-text {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #e2e8f0;
+  margin-bottom: 1rem;
+}
+
+.info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 100%;
+}
+
+.info-list li {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  padding-left: 0.8rem;
+  position: relative;
+}
+
+.info-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #06b6d4;
+}
+
+.info-close {
+  margin-top: auto;
+  align-self: flex-end;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.info-close:hover {
+  color: white;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Fetch Button */
@@ -392,46 +547,13 @@
 }
 
 /* Custom Cursor */
-body {
-  cursor: none;
-  /* Hide default cursor */
-}
-
 a,
 button,
 .upload-card {
-  cursor: none;
-  /* Ensure pointer doesn't return on interactive elements */
+  cursor: pointer;
 }
 
-.custom-cursor {
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.8));
-  mix-blend-mode: screen;
-}
 
-.cursor-icon {
-  width: 32px;
-  height: 32px;
-  animation: cursor-pulse 2s infinite;
-}
-
-@keyframes cursor-pulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-    filter: brightness(1.2);
-  }
-
-  50% {
-    transform: scale(1.1);
-    filter: brightness(1.5);
-  }
-}
 
 /* Click Spark Effect */
 .click-spark {
@@ -461,4 +583,182 @@ button,
     transform: translate(-50%, -50%) scale(2);
     opacity: 0;
   }
+}
+
+/* Results Display */
+.results-container {
+  margin-top: 4rem;
+  width: 100%;
+  animation: fade-in-up 0.5s ease-out;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.summary-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s;
+}
+
+.summary-card:hover {
+  transform: translateY(-5px);
+  background: var(--card-hover);
+}
+
+.summary-card h3 {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary-card .value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+.summary-card p {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.summary-card.health .value {
+  color: #4ade80;
+  text-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+}
+
+.summary-card.critical .value {
+  color: #f87171;
+  text-shadow: 0 0 20px rgba(248, 113, 113, 0.4);
+}
+
+.summary-card.anomalies .value {
+  color: #fbbf24;
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+}
+
+.summary-card.loss .value {
+  color: #60a5fa;
+}
+
+/* Anomalies Table */
+.anomalies-section {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.subsection-title {
+  color: white;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.anomalies-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #e2e8f0;
+}
+
+.anomalies-table th,
+.anomalies-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.anomalies-table th {
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--accent-blue);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
+.anomalies-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge.critical {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+/* Mild = Yellow/Orange as requested */
+.badge.mild {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.badge.low {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+/* Show More Button */
+.show-more-container {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.show-more-btn {
+  background: transparent;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: var(--accent-blue);
+  padding: 0.8rem 2rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.show-more-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.normal-section {
+  margin-top: 1rem;
+  opacity: 0.8;
+  animation: fade-in 0.3s ease-out;
+}
+
+.badge.normal {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.4);
 }
