@@ -163,10 +163,12 @@ def _core_electrical_bomb_logic(merged_df: pd.DataFrame) -> pd.DataFrame:
         .agg(total_consumption=("energy_consumed", "sum"), energy_input=("energy_input", "mean"))
         .reset_index()
     )
+    tx_daily['loss'] = tx_daily["energy_input"] - tx_daily["total_consumption"]
     tx_daily["loss_ratio"] = (tx_daily["energy_input"] - tx_daily["total_consumption"]) / tx_daily["energy_input"]
     tx_loss = tx_daily.groupby("transformer_id")["loss_ratio"].mean()
     tx_loss_risk = (tx_loss - tx_loss.min()) / (tx_loss.max() - tx_loss.min())
-    
+    total_loss_all_transformers = tx_daily["loss"].sum()
+
     transformer_loss_df = (
         merged_df[["consumer_id", "transformer_id"]]
         .drop_duplicates()
@@ -252,4 +254,4 @@ def _core_electrical_bomb_logic(merged_df: pd.DataFrame) -> pd.DataFrame:
     # join(transformer_loss_df) which has index consumer_id and columns [transformer_id, transformer_loss_risk]
     # So yes, transformer_id is in combined_df.
     
-    return combined_df
+    return combined_df, total_loss_all_transformers

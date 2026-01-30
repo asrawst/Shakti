@@ -56,7 +56,7 @@ class MLEngine:
                 # Or maybe the user uploaded the merged file with a weird name and we failed detection
                 raise ValueError("No valid input files provided. Please upload the 5 required CSVs or a single merged dataset.")
 
-            final_df = run_pipeline(
+            final_df, total_loss_all_transformers = run_pipeline(
                 user_data=user_data,
                 run_anomaly_model=False, 
             )
@@ -76,8 +76,7 @@ class MLEngine:
         
         # Simple heuristics for missing business metrics
         grid_health = max(0, 100 - (n_anomalies / total_consumers * 100)) if total_consumers > 0 else 0
-        total_loss = n_anomalies * 500 + critical_cases * 2000 # Estimate $500 per anomaly, $2000 per critical
-
+        total_loss = total_loss_all_transformers*9 
         response = {
             "summary": {
                 "total_consumers": int(total_consumers),
