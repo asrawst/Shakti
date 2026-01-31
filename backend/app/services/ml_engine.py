@@ -31,7 +31,7 @@ class MLEngine:
 
         if is_merged_format and len(files) == 1:
             # Single file path
-            final_df = run_pipeline(
+            final_df, total_loss_all_transformers, transformers_at_risk = run_pipeline(
                 merged_df=first_df,
                 run_anomaly_model=False
             )
@@ -56,7 +56,7 @@ class MLEngine:
                 # Or maybe the user uploaded the merged file with a weird name and we failed detection
                 raise ValueError("No valid input files provided. Please upload the 5 required CSVs or a single merged dataset.")
 
-            final_df, total_loss_all_transformers = run_pipeline(
+            final_df, total_loss_all_transformers, transformers_at_risk = run_pipeline(
                 user_data=user_data,
                 run_anomaly_model=False, 
             )
@@ -87,6 +87,7 @@ class MLEngine:
             },
             "results": final_df.to_dict(orient="records"),
             "anomalies": anomalies.to_dict(orient="records"),
+            'transformers_at_risk': transformers_at_risk,
         }
 
         return response
