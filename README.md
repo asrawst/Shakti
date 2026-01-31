@@ -1,62 +1,65 @@
 # ⚡ Shakti: Electricity Theft Detection System
 
-**Shakti** is an advanced, AI-powered platform designed to help utility companies detect, visualize, and prevent electricity theft. By leveraging multi-layer anomaly detection algorithms, it identifies suspicious consumption patterns, visualizes geographic hotspots, and provides actionable insights to reduce non-technical losses.
+**Shakti** is an advanced AI-powered analytics platform designed to detect electricity theft, visualize grid health, and identify risky consumers using machine learning.
 
-![Shakti Dashboard Screen](src/assets/logo.png)
+![Project Banner](public/vite.svg) *<!-- Replace with actual screenshot if available -->*
 
-## 🚀 Key Features
+## 🚀 Features
 
-*   **🔍 Multi-Layer Anomaly Detection**: Analyzes smart meter data using a sophisticated ML pipeline to detect theft, meter tampering, and irregularities.
-*   **🌍 Interactive Geospatial Map**:
-    *   Visualizes consumer locations on a **Google Map** (focused on India/Delhi).
-    *   **Pins Critical Cases**: Automatically filters and highlights "Theft" or "Critical" cases in **Red** for immediate attention.
-*   **📊 Comprehensive Dashboard**:
-    *   Real-time Grid Health Score.
-    *   Estimated Revenue Loss calculation.
-    *   Critical case count and anomaly breakdown.
-*   **📜 History & Storage**:
-    *   Securely saves scan results using **Firebase Storage**.
-    *   Retrievable history of past analyses for logged-in users.
-*   **🔐 User Authentication**: Secure admin login via **Firebase Authentication**.
-*   **🎨 Modern UI**: Fully responsive, dark-themed interface with glassmorphism effects.
+### 🔍 Advanced Anomaly Detection
+Uses a multi-layer risk assessment pipeline including:
+-   **Behavioral Analysis:** Isolation Forest ML model to detect usage anomalies.
+-   **Statistical Checks:** Z-Score & Peer Comparison.
+-   **Transformer Loss:** Analysis of input vs. consumed energy.
+-   **Voltage & Seasonal:** Power quality and seasonal usage patterns.
+
+### 📊 Interactive Dashboard
+-   **Grid Health Overview:** Real-time metrics on system status and estimated revenue loss.
+-   **Risk Visualization:**
+    -   **Transformer Stats:** Pie & Bar charts showing risk distribution per transformer.
+    -   **Detailed Tables:** Segmented views for "Detected Anomalies" (High/Critical) and "Other Entries" (Mild/Normal).
+-   **Geospatial Map:** Google Maps integration to pinpoint **High (Orange)** and **Critical (Red)** risk locations.
+
+### 📑 Reporting
+-   **PDF Export:** One-click generation of detailed audit reports (`electricity_theft_report.pdf`).
+-   **Inspection Management:** "Select Status" workflow (Initiated, In Process, Completed) for field teams.
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-*   **React** (Vite)
-*   **Tailwind CSS** (Custom styling)
-*   **Google Maps API** (via Requestly injection for dev / Native API)
-*   **Lucide React** (Icons)
-*   **Firebase SDK** (Auth, Firestore, Storage)
+-   **React 18** (Vite)
+-   **Recharts** for data visualization
+-   **Lucide React** for UI icons
+-   **Google Maps API** for geospatial data
 
 ### Backend
-*   **Python** (FastAPI)
-*   **Pandas / NumPy** (Data Processing)
-*   **Scikit-Learn / TensorFlow** (Anomaly Detection Models)
+-   **FastAPI** (Python)
+-   **Pandas & NumPy** for data processing
+-   **Scikit-Learn** for Machine Learning models (Isolation Forest)
 
 ---
 
 ## ⚙️ Installation & Setup
 
-Follow these steps to set up the project locally.
+### Prerequisites
+-   Node.js (v16+)
+-   Python (v3.8+)
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/asrawst/Shakti.git
-cd Shakti
+git clone https://github.com/your-username/electricity-theft-detection.git
+cd electricity-theft-detection
 ```
 
-### 2. Backend Setup (Python)
-Navigate to the backend directory and set up the virtual environment.
+### 2. Backend Setup
+Navigate to the backend folder and set up the Python environment.
 
 ```bash
 cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
 pip install -r requirements.txt
 ```
 
@@ -64,61 +67,62 @@ pip install -r requirements.txt
 ```bash
 uvicorn app.main:app --reload --port 8000
 ```
-The API will be active at `http://localhost:8000`.
+*The backend API will be available at `http://localhost:8000`*
 
-### 3. Frontend Setup (React)
+### 3. Frontend Setup
 Open a new terminal, navigate to the project root, and install dependencies.
 
 ```bash
-# From the root directory 'Shakti'
+# Return to root if in backend
+cd .. 
+
 npm install
 ```
 
-**Firebase Configuration:**
-Ensure you have a `src/firebaseConfig.js` file with your Firebase credentials:
-```javascript
-// src/firebaseConfig.js
-import { initializeApp } from "firebase/app";
-// ... your config
-```
-
-**Run the Frontend:**
+**Run the Frontend Development Server:**
 ```bash
 npm run dev
 ```
- The app will be accessible at `http://localhost:5173`.
-
----
-
-## 🗺️ Google Maps Setup (Development)
-This project uses the **Google Maps JavaScript API**. 
-For development without a billing account, we recommend using **Requestly** to inject the necessary scripts.
-
-1.  Install the **Requestly** browser extension.
-2.  Create a new "Insert Script" rule.
-3.  **URL Contains**: `localhost`
-4.  **Script Source**: `https://maps.googleapis.com/maps/api/js?key=YOUR_OPTIONAL_KEY` (or standard dev loading).
+*The application should now be running at `http://localhost:5173`*
 
 ---
 
 ## 📂 Project Structure
 
 ```
-Shakti/
-├── backend/                 # FastAPI Backend & ML Models
+electricity-theft-detection/
+├── backend/                # FastAPI Backend
 │   ├── app/
-│   │   ├── main.py          # API Entry point
-│   │   └── services/        # ML Engine & Logic
-│   └── sample_data/         # Training/Test datasets
-├── src/
-│   ├── components/          # React Components (Map, Navbar, Results)
-│   ├── assets/              # Images & Icons
-│   ├── App.jsx              # Main Frontend Logic
-│   └── firebaseConfig.js    # Firebase Setup
-└── README.md                # Project Documentation
+│   │   ├── services/      # ML Engine & Logic
+│   │   └── main.py        # API Entry point
+│   └── requirements.txt
+├── scripts/
+│   └── electrical_bomb.py # Core Risk Calculation Pipeline
+├── src/                    # React Frontend
+│   ├── components/        # UI Components (Map, Results, Modal)
+│   └── App.jsx            # Main App Component
+├── public/                 # Static Assets
+└── README.md               # You are here
 ```
+
+## 📝 Usage
+
+1.  Open the web app.
+2.  **Upload Data:** Drag & drop your dataset (single merged CSV or 5 separate files).
+3.  **Wait for Analysis:** The ML pipeline processes the data in real-time.
+4.  **View Results:**
+    -   Check the **Grid Health** score.
+    -   Review **High/Critical** consumers in the Anomalies table.
+    -   Click the **Pie Chart** icon on the "Est. Loss" card for detailed Transformer statistics.
+    -   Use the **Map** to view geographic clusters of theft.
+5.  **Export:** Click "Download PDF" to save the report.
 
 ---
 
-## 👥 Contributors
-Developed by **Team The Jesters**.
+## 🤝 Contribution
+
+Contributions are welcome! Please fork the repository and submit a pull request.
+
+## 📄 License
+
+This project is licensed under the MIT License.
