@@ -1,43 +1,37 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { auth } from '../firebaseConfig';
-
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+// import { auth } from '../firebaseConfig';
+// import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
 const LoginModal = ({ onClose, onLoginSuccess }) => {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
 
     const [loading, setLoading] = useState(false);
-    const [isSignUp, setIsSignUp] = useState(false);
+    // const [isSignUp, setIsSignUp] = useState(false); // Removed
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
-        if (isSignUp && password !== confirmPassword) {
-            setError("Passwords do not match");
-            setLoading(false);
-            return;
-        }
-
-        try {
-            if (isSignUp) {
-                await createUserWithEmailAndPassword(auth, email, password);
+        // Simulate network delay
+        setTimeout(() => {
+            if (username === 'Admin' && password === 'Admin') {
+                const mockUser = {
+                    uid: 'dummy-admin-123',
+                    email: 'admin@shakti.com',
+                    displayName: 'Admin'
+                };
+                onLoginSuccess(mockUser);
+                onClose();
             } else {
-                await signInWithEmailAndPassword(auth, email, password);
+                setError("Invalid Credentials. Please use Username: 'Admin' and Password: 'Admin'");
+                setLoading(false);
             }
-            onLoginSuccess();
-            onClose();
-        } catch (err) {
-            setError(`Login Failed: ${err.message || 'Check credentials'}`);
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
+        }, 800);
     };
 
     return (
@@ -66,7 +60,7 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
             }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', color: 'white' }}>
                     <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '600' }}>
-                        {isSignUp ? 'Admin Sign Up' : 'Admin Login'}
+                        Admin Login
                     </h2>
                     <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer' }}>
                         <X size={24} />
@@ -77,11 +71,11 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <label style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem' }}>Email</label>
+                        <label style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem' }}>Username</label>
                         <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             required
                             style={{
                                 padding: '0.75rem',
@@ -91,7 +85,7 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
                                 color: 'white',
                                 fontSize: '1rem'
                             }}
-                            placeholder="xyz@example.com"
+                            placeholder="Admin"
                         />
                     </div>
 
@@ -114,27 +108,6 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
                         />
                     </div>
 
-                    {isSignUp && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <label style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem' }}>Re-enter password</label>
-                            <input
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                required
-                                style={{
-                                    padding: '0.75rem',
-                                    borderRadius: '8px',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    background: 'rgba(0,0,0,0.2)',
-                                    color: 'white',
-                                    fontSize: '1rem'
-                                }}
-                                placeholder="••••••••"
-                            />
-                        </div>
-                    )}
-
                     <button
                         type="submit"
                         disabled={loading}
@@ -152,29 +125,9 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
                             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
                         }}
                     >
-                        {loading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Login')}
+                        {loading ? 'Processing...' : 'Login'}
                     </button>
-
-                    <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-                        {isSignUp ? "Already have an account? " : "Don't have an account? "}
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setIsSignUp(!isSignUp);
-                                setError('');
-                            }}
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                color: '#60a5fa',
-                                fontWeight: '600',
-                                cursor: 'pointer',
-                                textDecoration: 'underline'
-                            }}
-                        >
-                            {isSignUp ? 'Login' : 'Sign Up'}
-                        </button>
-                    </p>
+                    {/* Sign Up section removed */}
                 </form>
             </div>
         </div>

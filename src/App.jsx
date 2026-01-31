@@ -35,12 +35,12 @@ function App() {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = React.useState(false);
   const resultsRef = React.useRef(null);
 
-  React.useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
+  //   React.useEffect(() => {
+  //     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+  //       setUser(currentUser);
+  //     });
+  //     return () => unsubscribe();
+  //   }, []);
 
   React.useEffect(() => {
     if (result && resultsRef.current) {
@@ -93,26 +93,20 @@ function App() {
         setLoading(false); // Update UI immediately, don't wait for history save
 
         // Save to history if user is logged in
-        if (auth.currentUser) {
+        if (user) {
+          // Simulate saving to history for dummy user
+          console.log("Mocking save to history for user:", user.email);
+          // In a real app with dummy auth, we might skip this or save to localStorage
+          // For now, we just log it as success so the UI behaves correctly
+
+          /* 
+          // Real Firebase Code (Commented out for Dummy Auth)
           try {
-            // 1. Upload result data to Firebase Storage
-            const storageRef = ref(storage, `history/${auth.currentUser.uid}/${Date.now()}_${sourceFile.name}.json`);
+            const storageRef = ref(storage, `history/${user.uid}/${Date.now()}_${sourceFile.name}.json`);
             await uploadString(storageRef, JSON.stringify(resultData), 'raw');
-            const downloadURL = await getDownloadURL(storageRef);
-
-            // 2. Save metadata to Firestore
-            await addDoc(collection(db, "history"), {
-              userId: auth.currentUser.uid,
-              timestamp: serverTimestamp(),
-              fileName: sourceFile.name,
-              totalLoss: resultData.summary?.total_loss_value || 0,
-              storageUrl: downloadURL // Link to the full data
-            });
-
-            console.log("Scan saved to history (Storage)");
-          } catch (err) {
-            console.error("Error saving to history:", err);
-          }
+            // ...
+          } catch (err) { ... }
+          */
         }
       } else {
         setResult(data);
@@ -131,11 +125,12 @@ function App() {
   };
 
   const handleLogoutClick = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Error signing out: ", error);
-    }
+    // try {
+    //   await signOut(auth);
+    // } catch (error) {
+    //   console.error("Error signing out: ", error);
+    // }
+    setUser(null);
   };
 
   return (
@@ -160,7 +155,10 @@ function App() {
       {isLoginModalOpen && (
         <LoginModal
           onClose={() => setIsLoginModalOpen(false)}
-          onLoginSuccess={() => setIsLoginModalOpen(false)}
+          onLoginSuccess={(mockUser) => {
+            setUser(mockUser);
+            setIsLoginModalOpen(false);
+          }}
         />
       )}
       <div className="container">

@@ -46,7 +46,7 @@ const Navbar = ({ user, onLoginClick, onLogoutClick, onAboutClick, onHistoryClic
                 {user ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', position: 'relative' }} ref={menuRef}>
                         <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginRight: '0.5rem' }}>
-                            {user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1)}
+                            {user.displayName || user.email?.split('@')[0]}
                         </span>
 
                         <button
@@ -72,13 +72,6 @@ const Navbar = ({ user, onLoginClick, onLogoutClick, onAboutClick, onHistoryClic
                         {isMenuOpen && (
                             <div className="floating-menu">
                                 <div className="menu-list">
-                                    <button className="menu-item-float" onClick={() => { setIsMenuOpen(false); }}>
-                                        <div className="menu-item-title"><User size={16} /> Profile</div>
-                                        <div className="menu-item-desc">Manage your account preferences</div>
-                                    </button>
-
-                                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '0.5rem 0' }}></div>
-
                                     <button className="menu-item-float" onClick={handleLogout}>
                                         <div className="menu-item-title" style={{ color: '#ef4444' }}><LogOut size={16} /> Sign Out</div>
                                         <div className="menu-item-desc">Securely log out of the system</div>
