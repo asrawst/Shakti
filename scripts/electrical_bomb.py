@@ -226,17 +226,26 @@ def _core_electrical_bomb_logic(merged_df: pd.DataFrame) -> pd.DataFrame:
     # 8. INSPECTION SELECTION (For frontend Risk Class)
     mean_r = combined_df["final_risk"].mean()
     std_r = combined_df["final_risk"].std()
-    inspection_cutoff = max(combined_df["final_risk"].quantile(0.95), mean_r + 2 * std_r)
+    inspection_cutoff = max(combined_df["final_risk"].quantile(0.97), mean_r + 2 * std_r)
     
     def bucket(score):
         if score >= inspection_cutoff: return "critical"
-        elif score >= 0.7: return "high"
-        elif score >= 0.4: return "mild"
+        elif score >= combined_df['final_risk'].quantile(0.8): return "high"
+        elif score >= combined_df['final_risk'].quantile(0.5): return "mild"
         else: return "normal"
 
     combined_df["risk_class"] = combined_df["final_risk"].apply(bucket)
     combined_df["inspection_flag"] = combined_df["final_risk"] >= inspection_cutoff
-
+    transformer_anomaly_counts = combined_df[combined_df["inspection_flag"]].groupby("transformer_id").size()
+    iqr_threshold = transformer_anomaly_counts.quantile(0.75) + 1.5 * (transformer_anomaly_counts.quantile(0.75) - transformer_anomaly_counts.quantile(0.25))
+    transformer_risky = transformer_anomaly_counts[transformer_anomaly_counts > iqr_threshold]
+    transformers_at_risk = [
+    {
+        "transformer_id": transformer_id,
+        "anomalies_detected": int(count)
+    }
+    for transformer_id, count in transformer_risky.items()
+]
     # Calculate Percentile for Frontend Display
     combined_df["risk_percentile"] = combined_df["final_risk"].rank(pct=True).fillna(0.0)
     
@@ -254,4 +263,4 @@ def _core_electrical_bomb_logic(merged_df: pd.DataFrame) -> pd.DataFrame:
     # join(transformer_loss_df) which has index consumer_id and columns [transformer_id, transformer_loss_risk]
     # So yes, transformer_id is in combined_df.
     
-    return combined_df, total_loss_all_transformers
+    return combined_df, total_loss_all_transformers, transformers_at_risk
