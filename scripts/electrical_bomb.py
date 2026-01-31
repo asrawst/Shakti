@@ -104,7 +104,7 @@ def run_pipeline(*, user_data: dict = None, merged_df: pd.DataFrame = None, run_
 
     # 6. Run Core Logic
     # We pass the merged dataframe to the core logic function
-    final_results = _core_electrical_bomb_logic(merged)
+    final_results, total_loss = _core_electrical_bomb_logic(merged)
     
     # 7. Format for Frontend
     # Frontend expects: consumer_id, transformer_id, aggregate_risk_score, risk_class, inspection_flag
@@ -117,7 +117,7 @@ def run_pipeline(*, user_data: dict = None, merged_df: pd.DataFrame = None, run_
         # Logic is inside core classification, but let's verify
         pass
         
-    return final_results
+    return final_results, total_loss
 
 # ============================================================
 # CORE LOGIC (Refactored from electrical_bomb.py)

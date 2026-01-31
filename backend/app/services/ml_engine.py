@@ -33,7 +33,7 @@ class MLEngine:
             # Single file path
             final_df, total_loss_all_transformers, transformers_at_risk = run_pipeline(
                 merged_df=first_df,
-                run_anomaly_model=False
+                run_anomaly_model=True
             )
         else:
             # Standard 5-file path

@@ -4,6 +4,14 @@ import Hero from './components/Hero';
 import UploadBlock from './components/UploadBlock';
 import FetchButton from './components/FetchButton';
 import ResultsDisplay from './components/ResultsDisplay';
+
+import LoginModal from './components/LoginModal';
+import AboutUsModal from './components/AboutUsModal';
+import HistoryModal from './components/HistoryModal';
+import { auth, db, storage } from './firebaseConfig';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import './App.css';
 
 const dataset = {
@@ -21,7 +29,18 @@ function App() {
   const [files, setFiles] = React.useState({});
   const [loading, setLoading] = React.useState(false);
   const [result, setResult] = React.useState(null);
+  const [user, setUser] = React.useState(null);
+  const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = React.useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = React.useState(false);
   const resultsRef = React.useRef(null);
+
+  //   React.useEffect(() => {
+  //     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+  //       setUser(currentUser);
+  //     });
+  //     return () => unsubscribe();
+  //   }, []);
 
   React.useEffect(() => {
     if (result && resultsRef.current) {
@@ -69,9 +88,28 @@ function App() {
       console.log('Analysis Result:', data);
 
       if (data.status === 'success') {
-        setResult(data.data);
+        const resultData = data.data;
+        setResult(resultData);
+        setLoading(false); // Update UI immediately, don't wait for history save
+
+        // Save to history if user is logged in
+        if (user) {
+          // Simulate saving to history for dummy user
+          console.log("Mocking save to history for user:", user.email);
+          // In a real app with dummy auth, we might skip this or save to localStorage
+          // For now, we just log it as success so the UI behaves correctly
+
+          /* 
+          // Real Firebase Code (Commented out for Dummy Auth)
+          try {
+            const storageRef = ref(storage, `history/${user.uid}/${Date.now()}_${sourceFile.name}.json`);
+            await uploadString(storageRef, JSON.stringify(resultData), 'raw');
+            // ...
+          } catch (err) { ... }
+          */
+        }
       } else {
-        setResult(data); // In case structure differs, though ml_engine returns {status, data}
+        setResult(data);
       }
 
     } catch (error) {
@@ -82,15 +120,53 @@ function App() {
     }
   };
 
+  const handleLoginClick = () => {
+    setIsLoginModalOpen(true);
+  };
+
+  const handleLogoutClick = async () => {
+    // try {
+    //   await signOut(auth);
+    // } catch (error) {
+    //   console.error("Error signing out: ", error);
+    // }
+    setUser(null);
+  };
+
   return (
     <div className="container" style={{ maxWidth: '100%', padding: 0 }}>
-      <Navbar />
+      <Navbar
+        user={user}
+        onLoginClick={handleLoginClick}
+        onLogoutClick={handleLogoutClick}
+        onAboutClick={() => setIsAboutModalOpen(true)}
+        onHistoryClick={() => setIsHistoryModalOpen(true)}
+      />
+      {isHistoryModalOpen && (
+        <HistoryModal
+          user={user}
+          onClose={() => setIsHistoryModalOpen(false)}
+          onLoadHistory={(historyData) => setResult(historyData)}
+        />
+      )}
+      {isAboutModalOpen && (
+        <AboutUsModal onClose={() => setIsAboutModalOpen(false)} />
+      )}
+      {isLoginModalOpen && (
+        <LoginModal
+          onClose={() => setIsLoginModalOpen(false)}
+          onLoginSuccess={(mockUser) => {
+            setUser(mockUser);
+            setIsLoginModalOpen(false);
+          }}
+        />
+      )}
       <div className="container">
         <main className="main-content">
           <Hero />
 
           <section>
-            <h2 className="section-title">Upload Datasets</h2>
+            <h2 id="upload-section" className="section-title">Upload Dataset</h2>
             <div className="upload-grid">
               <UploadBlock
                 key={dataset.id}
@@ -102,7 +178,7 @@ function App() {
               />
             </div>
 
-            <FetchButton onClick={handleFetch} disabled={loading} />
+            <FetchButton onClick={handleFetch} disabled={loading} isAnalyzed={!!result} />
 
             <div ref={resultsRef}>
               <ResultsDisplay data={result} />

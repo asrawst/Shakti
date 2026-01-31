@@ -467,9 +467,12 @@
   justify-content: space-between;
   align-items: center;
   z-index: 100;
-  backdrop-filter: blur(10px);
-  background: rgba(5, 5, 7, 0.6);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(5, 5, 7, 0.3);
+  /* More transparent */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .nav-left {
@@ -485,8 +488,9 @@
 }
 
 .logo-icon {
-  width: 28px;
-  height: 28px;
+  width: auto;
+  height: 32px;
+  /* Reduced to fit better */
 }
 
 .nav-divider {
@@ -509,12 +513,19 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(4px);
 }
 
 .nav-link:hover,
 .nav-link.active {
   color: white;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .nav-right {
@@ -536,6 +547,29 @@
 .nav-cta:hover {
   opacity: 0.9;
   transform: translateY(-1px);
+}
+
+.nav-btn {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(37, 99, 235, 0.5));
+  color: white;
+  padding: 0.6rem 1.5rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 0 10px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.nav-btn:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.6), rgba(37, 99, 235, 0.7));
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 @media (max-width: 1024px) {
@@ -761,4 +795,38 @@ button,
   background: rgba(34, 197, 94, 0.2);
   color: #22c55e;
   border: 1px solid rgba(34, 197, 94, 0.4);
+}/* Scrollable Normal Entries */
+.normal-section .table-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 8px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+    /* Custom Scrollbar for Webkit */
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-blue) rgba(255, 255, 255, 0.05);
+}
+
+.normal-section .table-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.normal-section .table-wrapper::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.normal-section .table-wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--accent-blue);
+    border-radius: 10px;
+}
+
+.normal-section .anomalies-table th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #0f172a;
+    /* Dark solid color to hide scrolling content */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}/* Navbar Menu Dropdown */
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
 }
