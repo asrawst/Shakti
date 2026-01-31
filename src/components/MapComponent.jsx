@@ -113,13 +113,13 @@ const MapComponent = ({ data }) => {
             let color = '#ef4444'; // Red for critical
             const risk = (item.risk_class || '').toLowerCase();
 
-            // Filter: Only show critical/theft and mild cases
-            if (risk !== 'theft' && risk !== 'critical' && risk !== 'mild') {
+            // Filter: Only show Critical and High risk cases
+            if (risk !== 'critical' && risk !== 'high') {
                 return;
             }
 
-            if (risk === 'mild') {
-                color = '#eab308'; // Yellow for mild
+            if (risk === 'high') {
+                color = '#f97316'; // Orange for high
             }
 
             // Create a simple SVG marker

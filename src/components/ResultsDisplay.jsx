@@ -1,20 +1,25 @@
 import React from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { Download } from 'lucide-react';
+import { Download, PieChart as PieChartIcon } from 'lucide-react';
+import TransformerStatsModal from './TransformerStatsModal';
 
 import MapComponent from './MapComponent';
 
 const ResultsDisplay = ({ data }) => {
     const [showAll, setShowAll] = React.useState(false);
+    const [isStatsModalOpen, setIsStatsModalOpen] = React.useState(false);
     const [inspectionStatus, setInspectionStatus] = React.useState({});
 
     if (!data) return null;
 
-    const { summary, anomalies, results } = data; // 'results' contains all items
+    const { summary, anomalies, results, transformers_at_risk } = data; // 'results' contains all items
 
     // Filter out anomalies from the full list to avoid duplicates if we just append
-    const normalItems = results ? results.filter(item => item.risk_class === 'normal') : [];
+    // Filter out anomalies from the full list to avoid duplicates.
+    // "Normal Items" (Secondary Table) should contain everything NOT in the anomalies list (Normal + Mild).
+    const anomalyIds = new Set(anomalies.map(a => a.consumer_id));
+    const normalItems = results ? results.filter(item => !anomalyIds.has(item.consumer_id)) : [];
 
     // Sort normal items by risk score (descending) to show "almost risky" ones first
     const sortedNormalItems = [...normalItems].sort((a, b) => (b.aggregate_risk_score || 0) - (a.aggregate_risk_score || 0));
@@ -162,10 +167,24 @@ const ResultsDisplay = ({ data }) => {
                     <div className="value">{summary.anomalies_detected}</div>
                     <p>Total Suspicious Consumers</p>
                 </div>
-                <div className="summary-card loss">
+                <div className="summary-card loss" style={{ position: 'relative' }}>
                     <h3>Est. Loss</h3>
                     <div className="value">₹{summary.total_loss_calculated.toString().replace(/,/g, '')}</div>
                     <p>Potential Revenue Loss</p>
+                    <button
+                        onClick={() => setIsStatsModalOpen(true)}
+                        style={{
+                            position: 'absolute', bottom: '10px', right: '10px',
+                            background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)',
+                            cursor: 'pointer', padding: '5px', borderRadius: '50%',
+                            transition: 'background 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        }}
+                        title="View Transformer Stats"
+                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
+                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                        <PieChartIcon size={20} />
+                    </button>
                 </div>
             </div>
 
@@ -195,32 +214,28 @@ const ResultsDisplay = ({ data }) => {
                                         <td>{((item.aggregate_risk_score || 0) * 100).toFixed(0)}%</td>
                                         <td><span className={`badge ${item.risk_class}`}>{item.risk_class}</span></td>
                                         <td>
-                                            {['critical', 'mild'].includes(item.risk_class.toLowerCase()) ? (
-                                                <div style={{ position: 'relative' }}>
-                                                    <select
-                                                        value={inspectionStatus[item.consumer_id] || ""}
-                                                        onChange={(e) => handleStatusChange(item.consumer_id, e.target.value)}
-                                                        style={{
-                                                            background: 'rgba(0, 0, 0, 0.2)',
-                                                            border: `1px solid ${getStatusColor(inspectionStatus[item.consumer_id])}`,
-                                                            color: inspectionStatus[item.consumer_id] ? getStatusColor(inspectionStatus[item.consumer_id]) : 'rgba(255, 255, 255, 0.7)',
-                                                            padding: '0.4rem 0.8rem',
-                                                            borderRadius: '6px',
-                                                            fontSize: '0.85rem',
-                                                            cursor: 'pointer',
-                                                            outline: 'none',
-                                                            width: '130px'
-                                                        }}
-                                                    >
-                                                        <option value="" disabled>Select Status</option>
-                                                        <option value="Initiated">Initiated</option>
-                                                        <option value="In Process">In Process</option>
-                                                        <option value="Completed">Completed</option>
-                                                    </select>
-                                                </div>
-                                            ) : (
-                                                <span style={{ color: 'rgba(255, 255, 255, 0.3)', fontSize: '0.85rem' }}>-</span>
-                                            )}
+                                            <div style={{ position: 'relative' }}>
+                                                <select
+                                                    value={inspectionStatus[item.consumer_id] || ""}
+                                                    onChange={(e) => handleStatusChange(item.consumer_id, e.target.value)}
+                                                    style={{
+                                                        background: 'rgba(0, 0, 0, 0.2)',
+                                                        border: `1px solid ${getStatusColor(inspectionStatus[item.consumer_id])}`,
+                                                        color: inspectionStatus[item.consumer_id] ? getStatusColor(inspectionStatus[item.consumer_id]) : 'rgba(255, 255, 255, 0.7)',
+                                                        padding: '0.4rem 0.8rem',
+                                                        borderRadius: '6px',
+                                                        fontSize: '0.85rem',
+                                                        cursor: 'pointer',
+                                                        outline: 'none',
+                                                        width: '130px'
+                                                    }}
+                                                >
+                                                    <option value="" disabled>Select Status</option>
+                                                    <option value="Initiated">Initiated</option>
+                                                    <option value="In Process">In Process</option>
+                                                    <option value="Completed">Completed</option>
+                                                </select>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -268,6 +283,12 @@ const ResultsDisplay = ({ data }) => {
                     </div>
                 </div>
             )}
+            {/* Transformer Stats Modal */}
+            <TransformerStatsModal
+                isOpen={isStatsModalOpen}
+                onClose={() => setIsStatsModalOpen(false)}
+                data={transformers_at_risk || []}
+            />
         </div>
     );
 };

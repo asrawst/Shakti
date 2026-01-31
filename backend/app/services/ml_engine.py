@@ -31,9 +31,9 @@ class MLEngine:
 
         if is_merged_format and len(files) == 1:
             # Single file path
-            final_df, total_loss_all_transformers, transformers_at_risk = run_pipeline(
+            final_df, total_loss_all_transformers, transformers_at_risk, anomaly_cutoff = run_pipeline(
                 merged_df=first_df,
-                run_anomaly_model=True
+                run_anomaly_model=False
             )
         else:
             # Standard 5-file path
@@ -56,7 +56,7 @@ class MLEngine:
                 # Or maybe the user uploaded the merged file with a weird name and we failed detection
                 raise ValueError("No valid input files provided. Please upload the 5 required CSVs or a single merged dataset.")
 
-            final_df, total_loss_all_transformers, transformers_at_risk = run_pipeline(
+            final_df, total_loss_all_transformers, transformers_at_risk, anomaly_cutoff, transformers_at_risk = run_pipeline(
                 user_data=user_data,
                 run_anomaly_model=False, 
             )
@@ -64,11 +64,8 @@ class MLEngine:
         # ----------------------------
         # 3. Format output for frontend
         # ----------------------------
-        # ----------------------------
-        # 3. Format output for frontend
-        # ----------------------------
-        anomalies = final_df[final_df["risk_class"] != "normal"]
-        
+        # define anomalies strictly by anomaly cutoff (High + Critical)
+        anomalies = final_df[final_df["aggregate_risk_score"] >= anomaly_cutoff]
         # Calculate derived metrics
         total_consumers = len(final_df)
         n_anomalies = len(anomalies)
@@ -87,6 +84,7 @@ class MLEngine:
             },
             "results": final_df.to_dict(orient="records"),
             "anomalies": anomalies.to_dict(orient="records"),
+            'transformers_at_risk': transformers_at_risk,
             'transformers_at_risk': transformers_at_risk,
         }
 
