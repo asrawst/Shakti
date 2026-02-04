@@ -104,20 +104,20 @@ def run_pipeline(*, user_data: dict = None, merged_df: pd.DataFrame = None, run_
 
     # 6. Run Core Logic
     # We pass the merged dataframe to the core logic function
-    final_results = _core_electrical_bomb_logic(merged)
+    final_df, total_loss, transformers_risk= _core_electrical_bomb_logic(merged)
     
     # 7. Format for Frontend
     # Frontend expects: consumer_id, transformer_id, aggregate_risk_score, risk_class, inspection_flag
     
     # Map 'final_risk' -> 'aggregate_risk_score'
-    final_results = final_results.rename(columns={"final_risk": "aggregate_risk_score"})
+    final_df = final_df.rename(columns={"final_risk": "aggregate_risk_score"})
     
     # Ensure all required columns exist
-    if "risk_class" not in final_results.columns:
+    if "risk_class" not in final_df.columns:
         # Logic is inside core classification, but let's verify
         pass
         
-    return final_results
+    return final_df, total_loss, transformers_risk
 
 # ============================================================
 # CORE LOGIC (Refactored from electrical_bomb.py)
@@ -146,6 +146,8 @@ def _core_electrical_bomb_logic(merged_df: pd.DataFrame) -> pd.DataFrame:
     ml_raw = -iso.fit_predict(X_beh)
     ml_anomaly_risk = (ml_raw - ml_raw.min()) / (ml_raw.max() - ml_raw.min())
     ml_anomaly_df = pd.DataFrame({"ml_anomaly_risk": ml_anomaly_risk}, index=behavior_features.index)
+    threshold = 0.6
+    ml_anomaly_df['anomaly_flag'] = (ml_anomaly_df['ml_anomaly_risk'] >= threshold)
 
     # 2. BEHAVIORAL ANOMALY — STATISTICAL
     stat_series = (
@@ -222,7 +224,7 @@ def _core_electrical_bomb_logic(merged_df: pd.DataFrame) -> pd.DataFrame:
     )
 
     combined_df["final_risk"] = combined_df["base_risk"] ** 1.6
-    
+    iqr_risk = combined_df["final_risk"].quantile(0.75) + 1.5 * (combined_df["final_risk"].quantile(0.75) - combined_df["final_risk"].quantile(0.25))
     # 8. INSPECTION SELECTION (For frontend Risk Class)
     mean_r = combined_df["final_risk"].mean()
     std_r = combined_df["final_risk"].std()
@@ -231,21 +233,28 @@ def _core_electrical_bomb_logic(merged_df: pd.DataFrame) -> pd.DataFrame:
     def bucket(score):
         if score >= inspection_cutoff: return "critical"
         elif score >= combined_df['final_risk'].quantile(0.8): return "high"
-        elif score >= combined_df['final_risk'].quantile(0.5): return "mild"
+        elif score >= combined_df['final_risk'].quantile(0.6): return "mild"
         else: return "normal"
 
+    # Calculate Anomaly Threshold (Top 20% - High & Critical)
+    # User requested Mild != Anomaly. So Anomaly = High (top 20%) + Critical.
+    #anomaly_cutoff = combined_df["final_risk"].quantile(0.8)
+
     combined_df["risk_class"] = combined_df["final_risk"].apply(bucket)
-    combined_df["inspection_flag"] = combined_df["final_risk"] >= inspection_cutoff
-    transformer_anomaly_counts = combined_df[combined_df["inspection_flag"]].groupby("transformer_id").size()
-    iqr_threshold = transformer_anomaly_counts.quantile(0.75) + 1.5 * (transformer_anomaly_counts.quantile(0.75) - transformer_anomaly_counts.quantile(0.25))
-    transformer_risky = transformer_anomaly_counts[transformer_anomaly_counts > iqr_threshold]
+    
+    # Flag based on Anomaly Cutoff
+
+    # Count anomalies per transformer based on stricter IQR limit
+    transformer_anomaly_counts = combined_df[combined_df["anomaly_flag"]== True].groupby("transformer_id").size()
+    
+    # Show transformers that have at least one STRICT anomaly
     transformers_at_risk = [
-    {
-        "transformer_id": transformer_id,
-        "anomalies_detected": int(count)
-    }
-    for transformer_id, count in transformer_risky.items()
-]
+        {
+            "transformer_id": transformer_id,
+            "anomalies_detected": int(count)
+        }
+        for transformer_id, count in transformer_anomaly_counts.items()
+    ]
     # Calculate Percentile for Frontend Display
     combined_df["risk_percentile"] = combined_df["final_risk"].rank(pct=True).fillna(0.0)
     

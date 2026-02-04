@@ -31,7 +31,7 @@ class MLEngine:
 
         if is_merged_format and len(files) == 1:
             # Single file path
-            final_df, total_loss_all_transformers, transformers_at_risk, anomaly_cutoff = run_pipeline(
+            final_df, total_loss_all_transformers, transformers_at_risk= run_pipeline(
                 merged_df=first_df,
                 run_anomaly_model=False
             )
@@ -56,7 +56,7 @@ class MLEngine:
                 # Or maybe the user uploaded the merged file with a weird name and we failed detection
                 raise ValueError("No valid input files provided. Please upload the 5 required CSVs or a single merged dataset.")
 
-            final_df, total_loss_all_transformers, transformers_at_risk, anomaly_cutoff, transformers_at_risk = run_pipeline(
+            final_df, total_loss_all_transformers, transformers_at_risk= run_pipeline(
                 user_data=user_data,
                 run_anomaly_model=False, 
             )
@@ -65,14 +65,14 @@ class MLEngine:
         # 3. Format output for frontend
         # ----------------------------
         # define anomalies strictly by anomaly cutoff (High + Critical)
-        anomalies = final_df[final_df["aggregate_risk_score"] >= anomaly_cutoff]
         # Calculate derived metrics
         total_consumers = len(final_df)
-        n_anomalies = len(anomalies)
+        n_anomalies = len(final_df[final_df['anomaly_flag'] == True])
         critical_cases = (final_df["risk_class"] == "critical").sum()
-        
+        anomalies_output = final_df[final_df['anomaly_flag'] == True]
+        faulty_count = ((final_df['risk_class']== 'critical') | (final_df['anomaly_flag']== True)).sum()
         # Simple heuristics for missing business metrics
-        grid_health = max(0, 100 - (n_anomalies / total_consumers * 100)) if total_consumers > 0 else 0
+        grid_health = max(0, 100 - (faulty_count/ total_consumers * 100)) if total_consumers > 0 else 0
         total_loss = int(total_loss_all_transformers*9)
         response = {
             "summary": {
@@ -83,9 +83,9 @@ class MLEngine:
                 "total_loss_calculated": f"{total_loss:,}",
             },
             "results": final_df.to_dict(orient="records"),
-            "anomalies": anomalies.to_dict(orient="records"),
+            "anomalies": anomalies_output.to_dict(orient="records"),
             'transformers_at_risk': transformers_at_risk,
-            'transformers_at_risk': transformers_at_risk,
+            'transformers_at_risk': transformers_at_risk
         }
 
         return response
