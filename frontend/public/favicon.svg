@@ -1,0 +1,14 @@
+<svg width="128" height="128" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+    <g transform="translate(5, 5)">
+        <path
+            d="M15 25 L48 20 L35 62 L58 52 L32 110 C18 90 12 50 15 25Z"
+            fill="#9CA3AF"
+        />
+        <path
+            d="M85 25 C85 50 75 90 45 105 L65 58 L42 68 L72 10 L85 25Z"
+            fill="#8B5CF6"
+            filter="drop-shadow(0 2px 4px rgba(0,0,0,0.2))"
+        />
+    </g>
+</svg>
