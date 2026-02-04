@@ -1,0 +1,83 @@
+/* Floating Menu Container */
+.floating-menu {
+    position: absolute;
+    top: calc(100% + 1rem);
+    right: 0;
+    width: 250px;
+    /* Compact width */
+    background: #0b1015;
+    /* Very dark blue/black background */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Menu Items List */
+.menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+/* Individual Menu Item */
+.menu-item-float {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    padding: 0.75rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    border-radius: 8px;
+}
+
+.menu-item-float:hover {
+    background: rgba(255, 255, 255, 0.05);
+    /* Subtle hover background */
+}
+
+.menu-item-title {
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.menu-item-desc {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    line-height: 1.3;
+    margin-left: 2px;
+}
+
+/* Responsive: Mobile fallback */
+@media (max-width: 768px) {
+    .floating-menu {
+        width: 90vw;
+        right: -1rem;
+    }
+}
