@@ -3,7 +3,7 @@ import React from 'react';
 export default function ShaktiLogo({ className, style }) {
     return (
         <svg
-            viewBox="0 0 320 80"
+            viewBox="0 0 380 80"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             className={className}
@@ -20,13 +20,13 @@ export default function ShaktiLogo({ className, style }) {
 
             {/* 
                layout:
-               Text "SHAKTI" on left (approx 0-220 width)
-               Shield on right (approx 230-300 width)
+               Text "SHAKTI" on left
+               Shield on right
             */}
 
             {/* TEXT: SHAKTI */}
             <text
-                x="0"
+                x="10"
                 y="58"
                 fontFamily="Arial, Helvetica, sans-serif"
                 fontWeight="900"
@@ -39,8 +39,8 @@ export default function ShaktiLogo({ className, style }) {
             </text>
 
             {/* SHIELD ICON */}
-            {/* Translated to the right by ~240 units to sit next to text. Scaled down slightly to fit 80px height. */}
-            <g transform="translate(240, 5) scale(0.65)">
+            {/* Moved to 280 to prevent overlap with 'I' on wider font renderings */}
+            <g transform="translate(280, 5) scale(0.65)">
                 {/* Left/Grey Segment */}
                 <path
                     d="M15 25 L48 20 L35 62 L58 52 L32 110 C18 90 12 50 15 25Z"
