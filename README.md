@@ -2,7 +2,7 @@
 
 **Shakti** is an advanced AI-powered analytics platform designed to detect electricity theft, visualize grid health, and identify risky consumers using a multi-layer machine learning pipeline. This system empowers utility companies to minimize revenue loss and ensure grid stability.
 
-![Shakti Logo](public/favicon.svg)
+![Shakti Logo](frontend/public/favicon.svg)
 
 ## 🚀 Key Features
 
