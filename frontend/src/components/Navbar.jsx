@@ -78,7 +78,6 @@ const Navbar = ({ user, onLoginClick, onLogoutClick, onAboutClick, onHistoryClic
                             padding: '0.5rem',
                             color: 'white',
                             cursor: 'pointer',
-                            display: 'flex', // Always visible on mobile, conditionally on desktop for User
                             alignItems: 'center',
                             justifyContent: 'center',
                             transition: 'all 0.2s',
