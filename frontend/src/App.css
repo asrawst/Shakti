@@ -491,6 +491,19 @@
   width: auto;
   height: 32px;
   /* Reduced to fit better */
+  aspect-ratio: 380 / 80;
+  min-width: 152px;
+  /* Prevent collapsing on mobile */
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .logo-icon {
+    height: 36px;
+    /* Slightly bigger on mobile */
+    min-width: 171px;
+    /* 36 * 4.75 */
+  }
 }
 
 .nav-divider {
