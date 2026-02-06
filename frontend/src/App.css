@@ -487,6 +487,12 @@
   color: white;
 }
 
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .logo-icon {
   width: auto;
   height: 32px;
