@@ -26,6 +26,11 @@ const Navbar = ({ user, onLoginClick, onLogoutClick, onAboutClick, onHistoryClic
         onLogoutClick();
     };
 
+    const handleMobileLinkClick = (action) => {
+        setIsMenuOpen(false);
+        action();
+    };
+
     return (
         <nav className="navbar">
             <div className="nav-left">
@@ -34,57 +39,93 @@ const Navbar = ({ user, onLoginClick, onLogoutClick, onAboutClick, onHistoryClic
                         <Logo className="logo-icon" />
                     </a>
                 </div>
-                <div className="nav-divider"></div>
-                <ul className="nav-links">
-                    <li><a href="#" className="nav-link active">Home</a></li>
-                    <li><a href="#" className="nav-link" onClick={(e) => { e.preventDefault(); onAboutClick(); }}>About Us</a></li>
-                    <li><a href="https://github.com/yajatmalik1619/Shakti-Electricity_Theft_Detection_System.git" target="_blank" rel="noopener noreferrer" className="nav-link">Contact Us</a></li>
-                </ul>
+                {/* Desktop Links - Hidden on Mobile via CSS */}
+                <div className="desktop-nav">
+                    <div className="nav-divider"></div>
+                    <ul className="nav-links">
+                        <li><a href="#" className="nav-link active">Home</a></li>
+                        <li><a href="#" className="nav-link" onClick={(e) => { e.preventDefault(); onAboutClick(); }}>About Us</a></li>
+                        <li><a href="https://github.com/yajatmalik1619/Shakti-Electricity_Theft_Detection_System.git" target="_blank" rel="noopener noreferrer" className="nav-link">Contact Us</a></li>
+                    </ul>
+                </div>
             </div>
 
             <div className="nav-right">
-                {user ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', position: 'relative' }} ref={menuRef}>
-                        <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginRight: '0.5rem' }}>
-                            {user.displayName || user.email?.split('@')[0]}
-                        </span>
-
-                        <button
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            style={{
-                                background: 'rgba(255, 255, 255, 0.1)',
-                                border: '1px solid rgba(255, 255, 255, 0.2)',
-                                borderRadius: '8px',
-                                padding: '0.5rem',
-                                color: 'white',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.2s'
-                            }}
-                            onMouseEnter={e => e.target.style.background = 'rgba(255,255,255,0.15)'}
-                            onMouseLeave={e => e.target.style.background = 'rgba(255,255,255,0.1)'}
-                        >
-                            <Menu size={20} />
+                {/* Desktop Action Button - Hidden on Mobile via CSS if needed, or handled via menu */}
+                <div className="desktop-action">
+                    {user ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>
+                                {user.displayName || user.email?.split('@')[0]}
+                            </span>
+                        </div>
+                    ) : (
+                        <button onClick={onLoginClick} className="nav-btn">
+                            Admin login
                         </button>
+                    )}
+                </div>
 
-                        {isMenuOpen && (
-                            <div className="floating-menu">
-                                <div className="menu-list">
-                                    <button className="menu-item-float" onClick={handleLogout}>
-                                        <div className="menu-item-title" style={{ color: '#ef4444' }}><LogOut size={16} /> Sign Out</div>
-                                        <div className="menu-item-desc">Securely log out of the system</div>
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <button onClick={onLoginClick} className="nav-btn" style={{ cursor: 'pointer', border: 'none' }}>
-                        Admin login
+                {/* Mobile Menu Toggle / User Menu Toggle */}
+                <div className="menu-toggle-container" ref={menuRef}>
+                    <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="menu-toggle-btn"
+                        style={{
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            border: '1px solid rgba(255, 255, 255, 0.2)',
+                            borderRadius: '8px',
+                            padding: '0.5rem',
+                            color: 'white',
+                            cursor: 'pointer',
+                            display: 'flex', // Always visible on mobile, conditionally on desktop for User
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s',
+                        }}
+                    >
+                        <Menu size={20} />
                     </button>
-                )}
+
+                    {isMenuOpen && (
+                        <div className="floating-menu">
+                            <div className="menu-list">
+                                {/* Mobile Links - Only visible in menu */}
+                                <div className="mobile-only-links">
+                                    <button className="menu-item-float" onClick={() => setIsMenuOpen(false)}>
+                                        <div className="menu-item-title">Home</div>
+                                    </button>
+                                    <button className="menu-item-float" onClick={() => handleMobileLinkClick(onAboutClick)}>
+                                        <div className="menu-item-title">About Us</div>
+                                    </button>
+                                    <a href="https://github.com/yajatmalik1619/Shakti-Electricity_Theft_Detection_System.git"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="menu-item-float"
+                                        onClick={() => setIsMenuOpen(false)}>
+                                        <div className="menu-item-title">Contact Us</div>
+                                    </a>
+                                    <div className="menu-divider" style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '0.5rem 0' }}></div>
+                                </div>
+
+                                {user ? (
+                                    <>
+                                        <div className="menu-item-float" style={{ cursor: 'default', opacity: 0.7 }}>
+                                            <div className="menu-item-desc">Signed in as {user.displayName || user.email?.split('@')[0]}</div>
+                                        </div>
+                                        <button className="menu-item-float" onClick={handleLogout}>
+                                            <div className="menu-item-title" style={{ color: '#ef4444' }}><LogOut size={16} /> Sign Out</div>
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button className="menu-item-float" onClick={() => handleMobileLinkClick(onLoginClick)}>
+                                        <div className="menu-item-title" style={{ color: '#3b82f6' }}><User size={16} /> Admin Login</div>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
         </nav>
     );

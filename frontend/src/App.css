@@ -588,7 +588,38 @@
 @media (max-width: 1024px) {
 
   .nav-links,
-  .nav-divider {
+  .nav-divider,
+  .desktop-nav,
+  .desktop-action {
+    display: none !important;
+  }
+
+  .menu-toggle-btn {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .menu-toggle-btn {
+    /* Only show if user is logged in (handled by JS logic roughly, or we hide it for guests if that was the old behavior) */
+    /* Currently we want to hide the hamburger for guests on desktop */
+    display: none;
+  }
+
+  /* But wait, the JS renders it unconditionally now in the container if we want to support user menu. */
+  /* Let's refine: Desktop Guests see button, Mobile Guests see hamburger. */
+
+  /* We need a specific class for the guest hamburger if we want to hide it on desktop */
+}
+
+.mobile-only-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+@media (min-width: 1025px) {
+  .mobile-only-links {
     display: none;
   }
 }

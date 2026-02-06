@@ -12,9 +12,9 @@ export default function ShaktiLogo({ className, style }) {
         >
             <defs>
                 <linearGradient id="glossyPurple" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#a855f7" /> {/* Lighter Purple */}
-                    <stop offset="50%" stopColor="#7e22ce" /> {/* Medium Purple */}
-                    <stop offset="100%" stopColor="#581c87" /> {/* Darker Purple */}
+                    <stop offset="0%" stopColor="#E9D5FF" /> {/* Very Light Purple */}
+                    <stop offset="50%" stopColor="#C084FC" /> {/* Light Purple */}
+                    <stop offset="100%" stopColor="#A855F7" /> {/* Medium Purple */}
                 </linearGradient>
             </defs>
 
