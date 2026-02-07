@@ -104,7 +104,7 @@ def run_pipeline(*, user_data: dict = None, merged_df: pd.DataFrame = None, run_
 
     # 6. Run Core Logic
     # We pass the merged dataframe to the core logic function
-    final_df, total_loss, transformers_risk= _core_electrical_bomb_logic(merged)
+    final_df, total_loss, transformers_risk, iqr_limit = _core_electrical_bomb_logic(merged)
     
     # 7. Format for Frontend
     # Frontend expects: consumer_id, transformer_id, aggregate_risk_score, risk_class, inspection_flag
@@ -117,7 +117,7 @@ def run_pipeline(*, user_data: dict = None, merged_df: pd.DataFrame = None, run_
         # Logic is inside core classification, but let's verify
         pass
         
-    return final_df, total_loss, transformers_risk
+    return final_df, total_loss, transformers_risk, iqr_limit
 
 # ============================================================
 # CORE LOGIC (Refactored from electrical_bomb.py)
@@ -146,8 +146,6 @@ def _core_electrical_bomb_logic(merged_df: pd.DataFrame) -> pd.DataFrame:
     ml_raw = -iso.fit_predict(X_beh)
     ml_anomaly_risk = (ml_raw - ml_raw.min()) / (ml_raw.max() - ml_raw.min())
     ml_anomaly_df = pd.DataFrame({"ml_anomaly_risk": ml_anomaly_risk}, index=behavior_features.index)
-    threshold = 0.6
-    ml_anomaly_df['anomaly_flag'] = (ml_anomaly_df['ml_anomaly_risk'] >= threshold)
 
     # 2. BEHAVIORAL ANOMALY — STATISTICAL
     stat_series = (
@@ -238,14 +236,15 @@ def _core_electrical_bomb_logic(merged_df: pd.DataFrame) -> pd.DataFrame:
 
     # Calculate Anomaly Threshold (Top 20% - High & Critical)
     # User requested Mild != Anomaly. So Anomaly = High (top 20%) + Critical.
-    #anomaly_cutoff = combined_df["final_risk"].quantile(0.8)
+    anomaly_cutoff = combined_df["final_risk"].quantile(0.8)
 
     combined_df["risk_class"] = combined_df["final_risk"].apply(bucket)
     
     # Flag based on Anomaly Cutoff
+    combined_df["inspection_flag"] = combined_df["final_risk"] >= anomaly_cutoff
 
     # Count anomalies per transformer based on stricter IQR limit
-    transformer_anomaly_counts = combined_df[combined_df["anomaly_flag"]== True].groupby("transformer_id").size()
+    transformer_anomaly_counts = combined_df[combined_df["inspection_flag"]].groupby("transformer_id").size()
     
     # Show transformers that have at least one STRICT anomaly
     transformers_at_risk = [
@@ -272,4 +271,4 @@ def _core_electrical_bomb_logic(merged_df: pd.DataFrame) -> pd.DataFrame:
     # join(transformer_loss_df) which has index consumer_id and columns [transformer_id, transformer_loss_risk]
     # So yes, transformer_id is in combined_df.
     
-    return combined_df, total_loss_all_transformers, transformers_at_risk
+    return combined_df, total_loss_all_transformers, transformers_at_risk, anomaly_cutoff
