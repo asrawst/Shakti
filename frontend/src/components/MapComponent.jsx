@@ -1,172 +1,99 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default marker icons in React Leaflet
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
+
+// Custom Icons for different risk levels
+const createCustomIcon = (color) => {
+    return new L.DivIcon({
+        className: 'custom-marker',
+        html: `<div style="background-color: ${color}; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.3);"></div>`,
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
+        popupAnchor: [0, -10]
+    });
+};
+
+const redIcon = createCustomIcon('#ef4444');   // Critical
+const orangeIcon = createCustomIcon('#f97316'); // High
+const greenIcon = createCustomIcon('#10b981');  // Normal (if needed)
 
 const MapComponent = ({ data }) => {
-    const mapRef = useRef(null);
-    const googleMapRef = useRef(null);
-    const markersRef = useRef([]);
-    const [error, setError] = useState(null);
+    const [center, setCenter] = useState([28.6139, 77.2090]); // Default New Delhi
 
     // Filter and process data
-    const getUniqueConsumers = (data) => {
+    const markers = useMemo(() => {
         if (!data || !data.results) return [];
+
         const uniqueConsumers = {};
         data.results.forEach(item => {
+            // Keep the detection with highest risk for each consumer
             if (!uniqueConsumers[item.consumer_id]) {
                 uniqueConsumers[item.consumer_id] = item;
             } else {
-                if (item.aggregate_risk_score > uniqueConsumers[item.consumer_id].aggregate_risk_score) {
+                if ((item.aggregate_risk_score || 0) > (uniqueConsumers[item.consumer_id].aggregate_risk_score || 0)) {
                     uniqueConsumers[item.consumer_id] = item;
                 }
             }
         });
-        return Object.values(uniqueConsumers);
-    };
 
-    useEffect(() => {
-        // Wait for window.google to be available (injected by Requestly)
-        const checkForGoogleMaps = () => {
-            if (window.google && window.google.maps) {
-                initializeMap();
-            } else {
-                // Poll for a brief moment in case script injection is slightly delayed
-                setTimeout(checkForGoogleMaps, 500);
-            }
-        };
+        // Convert to array and filter valid coordinates
+        return Object.values(uniqueConsumers)
+            .filter(item => {
+                const lat = parseFloat(item.latitude);
+                const lng = parseFloat(item.longitude);
+                // Basic validation for lat/long range
+                return !isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+            })
+            .map(item => {
+                const risk = (item.risk_class || '').toLowerCase();
+                let icon = greenIcon;
+                if (risk === 'critical') icon = redIcon;
+                else if (risk === 'high') icon = orangeIcon;
 
-        checkForGoogleMaps();
+                // Only showing Critical and High as per previous logic, but let's show all if valid coords?
+                // Logic preserved: show Critical and High primarily if we want to focus on theft.
+                // But generally a map shows everything. Let's filter like before to keep it clean?
+                // The previous code filtered: if (risk !== 'critical' && risk !== 'high') return;
 
-        return () => {
-            // Cleanup markers
-            markersRef.current.forEach(marker => marker.setMap(null));
-        };
-    }, []);
+                // Let's keep that filter for now to match the "Theft Detection" focus
+                if (risk !== 'critical' && risk !== 'high') return null;
 
-    const initializeMap = () => {
-        if (!mapRef.current) return;
-        if (googleMapRef.current) return; // Already initialized
-
-        try {
-            googleMapRef.current = new window.google.maps.Map(mapRef.current, {
-                center: { lat: 28.6139, lng: 77.2090 }, // New Delhi Center
-                zoom: 11,
-                mapTypeControl: false, // Disable Map/Satellite toggle
-                streetViewControl: false, // Disable Street View
-                restriction: {
-                    latLngBounds: {
-                        north: 28.90,
-                        south: 28.40,
-                        east: 77.40,
-                        west: 76.80,
-                    },
-                    strictBounds: false,
-                },
-                styles: [
-                    // Dark theme style to match the app
-                    { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
-                    { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
-                    { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
-                    {
-                        featureType: "administrative.locality",
-                        elementType: "labels.text.fill",
-                        stylers: [{ color: "#d59563" }],
-                    },
-                    {
-                        featureType: "poi",
-                        elementType: "labels.text.fill",
-                        stylers: [{ color: "#d59563" }],
-                    },
-                    {
-                        featureType: "poi.park",
-                        elementType: "geometry",
-                        stylers: [{ color: "#263c3f" }],
-                    },
-                    {
-                        featureType: "water",
-                        elementType: "geometry",
-                        stylers: [{ color: "#17263c" }],
-                    },
-                ]
-            });
-
-            // Add markers
-            updateMarkers();
-        } catch (err) {
-            console.error("Error initializing Google Map:", err);
-            setError("Google Maps API loaded but initialization failed.");
-        }
-    };
-
-    const updateMarkers = () => {
-        if (!googleMapRef.current) return;
-
-        // Clear existing
-        markersRef.current.forEach(marker => marker.setMap(null));
-        markersRef.current = [];
-
-        const consumers = getUniqueConsumers(data);
-
-        consumers.forEach(item => {
-            const lat = parseFloat(item.latitude);
-            const lng = parseFloat(item.longitude);
-            if (isNaN(lat) || isNaN(lng)) return;
-
-            let color = '#ef4444'; // Red for critical
-            const risk = (item.risk_class || '').toLowerCase();
-
-            // Filter: Only show Critical and High risk cases
-            if (risk !== 'critical' && risk !== 'high') {
-                return;
-            }
-
-            if (risk === 'high') {
-                color = '#f97316'; // Orange for high
-            }
-
-            // Create a simple SVG marker
-            const svgMarker = {
-                path: window.google.maps.SymbolPath.CIRCLE,
-                fillColor: color,
-                fillOpacity: 0.8,
-                strokeWeight: 2,
-                strokeColor: "white",
-                scale: 8,
-            };
-
-            const marker = new window.google.maps.Marker({
-                position: { lat, lng },
-                map: googleMapRef.current,
-                icon: svgMarker,
-                title: `Consumer: ${item.consumer_id} (${item.risk_class})`
-            });
-
-            // InfoWindow
-            const infoWindow = new window.google.maps.InfoWindow({
-                content: `
-                    <div style="color: black; padding: 5px;">
-                        <strong>ID: ${item.consumer_id}</strong><br/>
-                        Risk: ${((item.aggregate_risk_score || 0) * 100).toFixed(0)}%
-                    </div>
-                `
-            });
-
-            marker.addListener("click", () => {
-                infoWindow.open(googleMapRef.current, marker);
-            });
-
-            markersRef.current.push(marker);
-        });
-    };
-
-    // Update markers if data changes after map init
-    useEffect(() => {
-        if (googleMapRef.current) {
-            updateMarkers();
-        }
+                return {
+                    ...item,
+                    lat: parseFloat(item.latitude),
+                    lng: parseFloat(item.longitude),
+                    icon: icon
+                };
+            })
+            .filter(Boolean); // Remove nulls
     }, [data]);
+
+    // Update center based on first marker if available
+    useEffect(() => {
+        if (markers.length > 0) {
+            setCenter([markers[0].lat, markers[0].lng]);
+        }
+    }, [markers]);
 
     return (
         <div style={{
-            height: '400px',
+            height: '450px',
             width: '100%',
             borderRadius: '16px',
             overflow: 'hidden',
@@ -174,28 +101,38 @@ const MapComponent = ({ data }) => {
             marginBottom: '4rem',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            position: 'relative'
+            position: 'relative',
+            zIndex: 0 // Ensure it doesn't overlap incorrectly
         }}>
-            <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
+            <MapContainer
+                center={center}
+                zoom={11}
+                scrollWheelZoom={false}
+                style={{ height: '100%', width: '100%', background: '#242f3e' }}
+            >
+                <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                />
 
-            {/* Fallback/Loading message if API isn't injected yet */}
-            {!window.google && !error && (
-                <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: '#0f172a',
-                    color: 'rgba(255,255,255,0.7)',
-                    zIndex: 1
-                }}>
-                    Waiting for Google Maps (Requestly)...
-                </div>
-            )}
+                {markers.map((item) => (
+                    <Marker
+                        key={item.consumer_id}
+                        position={[item.lat, item.lng]}
+                        icon={item.icon}
+                    >
+                        <Popup className="custom-popup">
+                            <div style={{ color: '#1e293b' }}>
+                                <strong>ID: {item.consumer_id}</strong><br />
+                                Risk: {((item.aggregate_risk_score || 0) * 100).toFixed(0)}%<br />
+                                <span style={{ textTransform: 'capitalize', color: item.risk_class === 'critical' ? '#ef4444' : '#f97316' }}>
+                                    {item.risk_class}
+                                </span>
+                            </div>
+                        </Popup>
+                    </Marker>
+                ))}
+            </MapContainer>
         </div>
     );
 };
