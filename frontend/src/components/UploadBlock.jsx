@@ -7,6 +7,7 @@ const UploadBlock = ({
     icon,
     details,
     onFileUpload,
+    sampleData // { url, name }
 }) => {
     const [dragActive, setDragActive] = useState(false);
     const [file, setFile] = useState(null);
@@ -50,6 +51,11 @@ const UploadBlock = ({
         e.stopPropagation();
         setShowInfo(!showInfo);
     }
+
+    const handleDownloadSample = (e) => {
+        e.stopPropagation();
+        // Downloads are handled by anchor tag, but we stop propagation just in case
+    };
 
     return (
         <div
@@ -141,6 +147,20 @@ const UploadBlock = ({
                         </div>
                     )}
 
+                    {/* Sample Download Link */}
+                    {sampleData && (
+                        <div className="sample-download-container" onClick={(e) => e.stopPropagation()}>
+                            <a
+                                href={sampleData.url}
+                                download={sampleData.name}
+                                className="sample-download-link"
+                                onClick={handleDownloadSample} // redundant but safe
+                            >
+                                Download Sample CSV
+                            </a>
+                        </div>
+                    )}
+
                     {/* Upload CSV Button Visual */}
                     <div className="upload-btn-visual">
                         Upload CSV
@@ -159,7 +179,12 @@ UploadBlock.propTypes = {
     details: PropTypes.shape({
         text: PropTypes.string,
         columns: PropTypes.arrayOf(PropTypes.string)
+    }),
+    sampleData: PropTypes.shape({
+        url: PropTypes.string,
+        name: PropTypes.string
     })
+
 };
 
 export default UploadBlock;

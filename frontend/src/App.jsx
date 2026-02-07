@@ -176,6 +176,10 @@ function App() {
                 icon={dataset.icon}
                 details={dataset.details}
                 onFileUpload={(file) => handleFileUpload(dataset.id, file)}
+                sampleData={{
+                  url: '/sample_data/sample_dataset.csv',
+                  name: 'Sample_Dataset.csv'
+                }}
               />
             </div>
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Logo from './Logo';
-import { Menu, User, History, LogOut } from 'lucide-react';
+import { Menu, User, History, LogOut, Github } from 'lucide-react';
 import '../navbar_menu.css';
 
 const Navbar = ({ user, onLoginClick, onLogoutClick, onAboutClick, onHistoryClick }) => {
@@ -45,7 +45,18 @@ const Navbar = ({ user, onLoginClick, onLogoutClick, onAboutClick, onHistoryClic
                     <ul className="nav-links">
                         <li><a href="#" className="nav-link active">Home</a></li>
                         <li><a href="#" className="nav-link" onClick={(e) => { e.preventDefault(); onAboutClick(); }}>About Us</a></li>
-                        <li><a href="https://github.com/yajatmalik1619/Shakti-Electricity_Theft_Detection_System.git" target="_blank" rel="noopener noreferrer" className="nav-link">Contact Us</a></li>
+                        <li>
+                            <a
+                                href="https://github.com/asrawst/Shakti.git"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="nav-link"
+                                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                            >
+                                <Github size={18} />
+                                GitHub
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -97,12 +108,17 @@ const Navbar = ({ user, onLoginClick, onLogoutClick, onAboutClick, onHistoryClic
                                     <button className="menu-item-float" onClick={() => handleMobileLinkClick(onAboutClick)}>
                                         <div className="menu-item-title">About Us</div>
                                     </button>
-                                    <a href="https://github.com/yajatmalik1619/Shakti-Electricity_Theft_Detection_System.git"
+                                    <a href="https://github.com/asrawst/Shakti.git"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="menu-item-float"
-                                        onClick={() => setIsMenuOpen(false)}>
-                                        <div className="menu-item-title">Contact Us</div>
+                                        onClick={() => setIsMenuOpen(false)}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', color: '#e2e8f0' }}
+                                    >
+                                        <div className="menu-item-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <Github size={18} />
+                                            GitHub
+                                        </div>
                                     </a>
                                     <div className="menu-divider" style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '0.5rem 0' }}></div>
                                 </div>
