@@ -1,12 +1,12 @@
 # ⚡ Shakti: Electricity Theft Detection System
 
-**Shakti** is an advanced AI-powered analytics platform designed to detect electricity theft, visualize grid health, and identify risky consumers using a multi-layer machine learning pipeline. This system empowers utility companies to minimize revenue loss and ensure grid stability.
+**Shakti** is an advanced multi layered anomaly detection system designed to detect electricity theft, visualize grid health, and identify risky consumers using a multi-layer machine learning pipeline. This system empowers utility companies to minimize revenue loss and ensure grid stability.
 
 ![Shakti Logo](frontend/public/favicon.svg)
 
-## 🚀 Key Features
+##  Key Features
 
-### 🔍 Multi-Layer Anomaly Detection
+###  Multi-Layer Anomaly Detection
 The core engine (`electrical_bomb.py`) uses a weighted ensemble of detection techniques:
 1.  **Behavioral Analysis (ML):** Isolation Forest model to detect unusual consumption patterns.
 2.  **Statistical Outliers:** Z-Score analysis for extreme deviation from personal history.
@@ -14,7 +14,7 @@ The core engine (`electrical_bomb.py`) uses a weighted ensemble of detection tec
 4.  **Peer Comparison:** Deviations from the average consumption of connected peers.
 5.  **Voltage & Seasonal:** Alerts on voltage irregularities and seasonal consumption drops.
 
-### 🛡️ Risk Classification
+###  Risk Classification
 The system categorizes consumers into risk levels for actionable insights:
 -   **CRITICAL (Red):** Immediate theft likely. Top priority for inspection.
 -   **HIGH (Orange):** strong indicators of theft (Top 20% risk).
@@ -23,7 +23,7 @@ The system categorizes consumers into risk levels for actionable insights:
 
 *Note: The "Anomalies" dashboard focuses strictly on **Critical** and **High** risk cases.*
 
-### 📊 Interactive Dashboard
+###  Interactive Dashboard
 -   **Grid Health Overview:** Real-time metrics on system status and estimated revenue loss.
 -   **Transformer Analytics:** Interactive Pie & Bar charts showing risk distribution per transformer.
 -   **Geospatial Map:** Google Maps integration that pins **High (Orange)** and **Critical (Red)** risk locations for field teams.
@@ -31,13 +31,13 @@ The system categorizes consumers into risk levels for actionable insights:
     -   **Detected Anomalies:** Actionable list of high-risk consumers with "Select Status" workflow.
     -   **Other Entries:** Secondary view for "Mild" and "Normal" consumers.
 
-### 📑 Export & Management
+###  Export & Management
 -   **PDF Export:** Generate professional audit reports (`electricity_theft_report.pdf`).
 -   **Inspection Tracking:** Track status (Initiated, In Process, Completed) directly from the dashboard.
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 ### Frontend
 -   **React 18** (Vite)
@@ -55,7 +55,7 @@ The system categorizes consumers into risk levels for actionable insights:
 ---
 
 
-## 📂 Project Structure
+##  Project Structure
 
 ```
 Shakti/
@@ -75,7 +75,7 @@ Shakti/
 
 ---
 
-## ⚙️ Installation & Setup
+##  Installation & Setup
 
 ### Prerequisites
 -   Node.js (v16+)
@@ -122,10 +122,10 @@ npm run dev
 
 ---
 
-## 📝 Usage Guide
+##  Usage Guide
 
 1.  **Launch:** Open the web app at `http://localhost:5173`.
-2.  **Upload Data:** Drag & drop your dataset (single merged CSV or the 5 standard separate files).
+2.  **Upload Data:** Drag & drop your dataset (single merged CSV or the 5 standard separate files). [Sample](https://www.kaggle.com/datasets/samayrajat/final-electricity-skewed)
 3.  **Analyze:** Watch the pipeline process data in real-time.
 4.  **Investigate:**
     -   Check the **Global Map** for Red/Orange pins.
@@ -135,7 +135,7 @@ npm run dev
 
 ---
 
-## 🤝 Contribution
+##  Contribution
 
 Contributions are welcome! Please fork the repository and submit a pull request.
 
