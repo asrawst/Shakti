@@ -1,4 +1,4 @@
-# ⚡ Shakti: Electricity Theft Detection System
+#  Shakti: Electricity Theft Detection System
 
 **Shakti** is an advanced multi layered anomaly detection system designed to detect electricity theft, visualize grid health, and identify risky consumers using a multi-layer machine learning pipeline. This system empowers utility companies to minimize revenue loss and ensure grid stability.
 
