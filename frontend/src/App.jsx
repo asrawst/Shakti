@@ -4,6 +4,7 @@ import Hero from './components/Hero';
 import UploadBlock from './components/UploadBlock';
 import FetchButton from './components/FetchButton';
 import ResultsDisplay from './components/ResultsDisplay';
+import Footer from './components/Footer';
 
 import LoginModal from './components/LoginModal';
 import AboutUsModal from './components/AboutUsModal';
@@ -134,8 +135,9 @@ function App() {
     setUser(null);
   };
 
+
   return (
-    <div className="container" style={{ maxWidth: '100%', padding: 0 }}>
+    <div className="container" style={{ maxWidth: '100%', padding: 0, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar
         user={user}
         onLoginClick={handleLoginClick}
@@ -191,6 +193,7 @@ function App() {
           </section>
         </main>
       </div>
+      <Footer onAboutClick={() => setIsAboutModalOpen(true)} />
     </div>
   );
 }
