@@ -1,19 +1,36 @@
+"""
+Machine Learning Engine Service Adapter.
+
+Acts as an interface between the FastAPI controllers and the core data processing
+and analysis pipeline defined in electrical_bomb.py.
+"""
+
 import pandas as pd
 from typing import Dict
-
-# Import YOUR real orchestrator
 
 from app.core.electrical_bomb import run_pipeline
 
 class MLEngine:
+    """
+    Service adapter for the electricity theft detection pipeline.
+    """
+
     def analyze(self, files: Dict[str, pd.DataFrame]) -> Dict:
         """
-        Adapter between FastAPI uploads and real ML pipelines.
-        """
+        Processes uploaded DataFrames and delegates them to the analysis pipeline.
 
-        # ----------------------------
-        # 1. Pipeline Routing (Merged vs Separate)
-        # ----------------------------
+        Args:
+            files (Dict[str, pd.DataFrame]): A dictionary mapping filenames to their
+                                             corresponding pandas DataFrames.
+
+        Returns:
+            Dict: Analytical results including summary metrics, detected anomalies,
+                  and transformer risk data structured for the frontend.
+                  
+        Raises:
+            ValueError: If the required files or structure are missing or invalid.
+        """
+        # Pipeline Routing (Merged vs Separate)
         
         # Check if we have the single merged file
         # We look for a file that looks like the merged one (large, or specifically named)
@@ -61,9 +78,7 @@ class MLEngine:
                 run_anomaly_model=False, 
             )
 
-        # ----------------------------
-        # 3. Format output for frontend
-        # ----------------------------
+        # Format output for frontend
         # define anomalies strictly by anomaly cutoff (High + Critical)
         anomalies = final_df[final_df["aggregate_risk_score"] >= anomaly_cutoff]
         # Calculate derived metrics

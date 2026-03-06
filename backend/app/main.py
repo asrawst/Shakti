@@ -1,12 +1,17 @@
+"""
+Electricity Theft Detection API Main Application.
+
+This module initializes the FastAPI application, configures CORS,
+and includes the necessary API routers for processing datasets.
+"""
+
 import sys
 import os
 from pathlib import Path
 
-# Fix ModuleNotFoundError for 'scripts'
-# Add the project root and scripts directory to sys.path
+# Add the project root to sys.path to ensure absolute imports from 'app' work properly.
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR))
-# sys.path.append(str(BASE_DIR / "scripts")) # Removed scripts dir
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,4 +33,10 @@ app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/")
 async def root():
+    """
+    Health check endpoint.
+
+    Returns:
+        dict: A simple status message confirming the API is running.
+    """
     return {"message": "Electricity Theft Detection System API is running"}

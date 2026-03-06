@@ -1,3 +1,9 @@
+"""
+API Routes Module.
+
+Defines the FastAPI endpoints for handling client requests.
+"""
+
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from typing import List
 import pandas as pd
@@ -10,6 +16,21 @@ router = APIRouter()
 async def analyze_data(
     files: List[UploadFile] = File(...)
 ):
+    """
+    Analyzes uploaded electricity consumption datasets for anomalies.
+
+    Supports either a single merged dataset or the standard 5 distinct CSV files.
+    
+    Args:
+        files (List[UploadFile]): A list of uploaded CSV files from the client.
+
+    Returns:
+        dict: A dictionary containing the analysis status, summary metrics,
+              identified anomalies, and full results grid.
+
+    Raises:
+        HTTPException: If no valid CSV files are provided or if the ML engine fails.
+    """
     try:
         dataframes = {}
         

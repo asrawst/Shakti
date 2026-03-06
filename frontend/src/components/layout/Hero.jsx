@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import bulbImg from '../assets/bulb.png';
-import Sparkles from './Sparkles';
+import bulbImg from '../../assets/bulb.png';
+import Sparkles from '../common/Sparkles';
 
 // ... (TypewriterText component remains for now, will remove animation later)
 

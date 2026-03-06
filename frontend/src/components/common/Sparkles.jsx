@@ -1,5 +1,5 @@
 import React from 'react';
-import '../App.css'; // Ensure we have access to the animation keyframes
+import '../../App.css'; // Ensure we have access to the animation keyframes
 
 const Sparkles = () => {
     const [mousePos, setMousePos] = React.useState({ x: 0, y: 0 });

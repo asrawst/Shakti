@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Logo from './Logo';
+import Logo from '../common/Logo';
 import { Menu, User, History, LogOut, Github } from 'lucide-react';
-import '../navbar_menu.css';
+import './navbar_menu.css';
 
 const Navbar = ({ user, onLoginClick, onLogoutClick, onAboutClick, onHistoryClick }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);

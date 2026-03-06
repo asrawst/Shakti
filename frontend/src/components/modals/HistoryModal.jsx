@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, FileText, ChevronRight, AlertTriangle } from 'lucide-react';
-import { db, auth } from '../firebaseConfig';
+// import { db, auth } from '../../firebaseConfig';
 import { collection, query, where, orderBy, getDocs, limit, doc, getDoc } from 'firebase/firestore';
 
 const HistoryModal = ({ user, onClose, onLoadHistory }) => {

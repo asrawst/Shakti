@@ -1,18 +1,13 @@
 import React from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import UploadBlock from './components/UploadBlock';
-import FetchButton from './components/FetchButton';
-import ResultsDisplay from './components/ResultsDisplay';
-import Footer from './components/Footer';
-
-import LoginModal from './components/LoginModal';
-import AboutUsModal from './components/AboutUsModal';
-import HistoryModal from './components/HistoryModal';
-import { auth, db, storage } from './firebaseConfig';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
-import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import Navbar from './components/layout/Navbar';
+import Hero from './components/layout/Hero';
+import Footer from './components/layout/Footer';
+import UploadBlock from './components/features/UploadBlock';
+import ResultsDisplay from './components/features/ResultsDisplay';
+import FetchButton from './components/common/FetchButton';
+import LoginModal from './components/modals/LoginModal';
+import AboutUsModal from './components/modals/AboutUsModal';
+import HistoryModal from './components/modals/HistoryModal';
 import './App.css';
 
 const dataset = {
@@ -26,6 +21,12 @@ const dataset = {
   }
 };
 
+/**
+ * Main application component that orchestrates the layout, modals,
+ * and data fetching logic for the Electricity Theft Detection System.
+ *
+ * @returns {React.ReactElement} The rendered App component.
+ */
 function App() {
   const [files, setFiles] = React.useState({});
   const [loading, setLoading] = React.useState(false);
@@ -36,12 +37,7 @@ function App() {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = React.useState(false);
   const resultsRef = React.useRef(null);
 
-  //   React.useEffect(() => {
-  //     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-  //       setUser(currentUser);
-  //     });
-  //     return () => unsubscribe();
-  //   }, []);
+  // Removed unused Firebase authentication listener
 
   React.useEffect(() => {
     if (result && resultsRef.current) {
@@ -52,6 +48,12 @@ function App() {
     }
   }, [result]);
 
+  /**
+   * Handles file uploads from the UploadBlock.
+   *
+   * @param {string} id - The identifier for the upload block (e.g., 'source').
+   * @param {File} file - The uploaded file object.
+   */
   const handleFileUpload = (id, file) => {
     setFiles(prev => ({
       ...prev,
@@ -60,6 +62,9 @@ function App() {
     setResult(null); // Clear previous results on new upload
   };
 
+  /**
+   * Sends the uploaded files to the backend for analysis.
+   */
   const handleFetch = async () => {
     try {
       setLoading(true);
@@ -94,22 +99,7 @@ function App() {
         setResult(resultData);
         setLoading(false); // Update UI immediately, don't wait for history save
 
-        // Save to history if user is logged in
-        if (user) {
-          // Simulate saving to history for dummy user
-          console.log("Mocking save to history for user:", user.email);
-          // In a real app with dummy auth, we might skip this or save to localStorage
-          // For now, we just log it as success so the UI behaves correctly
-
-          /* 
-          // Real Firebase Code (Commented out for Dummy Auth)
-          try {
-            const storageRef = ref(storage, `history/${user.uid}/${Date.now()}_${sourceFile.name}.json`);
-            await uploadString(storageRef, JSON.stringify(resultData), 'raw');
-            // ...
-          } catch (err) { ... }
-          */
-        }
+        // Save to history logic would go here in a fully authorized environment.
       } else {
         setResult(data);
       }
@@ -126,12 +116,10 @@ function App() {
     setIsLoginModalOpen(true);
   };
 
+  /**
+   * Logs out the current user.
+   */
   const handleLogoutClick = async () => {
-    // try {
-    //   await signOut(auth);
-    // } catch (error) {
-    //   console.error("Error signing out: ", error);
-    // }
     setUser(null);
   };
 

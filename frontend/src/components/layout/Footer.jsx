@@ -1,5 +1,5 @@
 import React from 'react';
-import Logo from './Logo';
+import Logo from '../common/Logo';
 import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
 
 const Footer = ({ onAboutClick }) => {

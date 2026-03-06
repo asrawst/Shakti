@@ -2,7 +2,7 @@ import React from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Download, PieChart as PieChartIcon } from 'lucide-react';
-import TransformerStatsModal from './TransformerStatsModal';
+import TransformerStatsModal from '../modals/TransformerStatsModal';
 
 import MapComponent from './MapComponent';
 
